@@ -6,23 +6,24 @@
         <img src="../assets/home-logo.png" alt="" />
       </div>
       <span>Vue_shop后台管理系统</span>
-      <el-button type="info" class="logout-btn">退出登录</el-button>
+      <el-button type="info" @click="logout">退出登录</el-button>
     </el-header>
     <el-container>
       <!-- 侧边栏 -->
       <el-aside width="200px">
         <el-menu
+          :unique-opened="true"
           background-color="#304156"
           text-color="#fff"
         >
-          <el-submenu index="1">
+          <el-submenu :index="String(index)" v-for="(item,index) in menulist" :key="item.id">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span slot="title">用户管理</span>
+              <span slot="title">{{item.authName}}</span>
             </template>
-            <el-menu-item>
+            <el-menu-item v-for="subItem in item.children" :key="subItem.id">
               <i class="el-icon-menu"></i>
-              <span slot="title">选项一</span>
+              <span slot="title">{{subItem.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -35,7 +36,27 @@
 
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
+  data () {
+    return {
+      menulist: []
+    }
+  },
+  created () {
+    this.getMenuList()
+  },
+  methods: {
+    logout () {
+      window.sessionStorage.removeItem('token')
+      this.$router.push('/login')
+    },
+    async getMenuList () {
+      const { data: res } = await this.$http.get('/menus')
+      console.log(res)
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.menulist = res.data
+    }
+  }
 }
 </script>
 
