@@ -16,12 +16,12 @@
           background-color="#304156"
           text-color="#fff"
         >
-          <el-submenu :index="String(index)" v-for="(item,index) in menulist" :key="item.id">
+          <el-submenu :index="String(item.id)" v-for="item in menulist" :key="item.id">
             <template slot="title">
-              <i class="el-icon-location"></i>
+              <i :class="iconsObj[item.id]"></i>
               <span slot="title">{{item.authName}}</span>
             </template>
-            <el-menu-item v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="String(subItem.id)">
               <i class="el-icon-menu"></i>
               <span slot="title">{{subItem.authName}}</span>
             </el-menu-item>
@@ -39,7 +39,14 @@ export default {
   name: 'Home',
   data () {
     return {
-      menulist: []
+      menulist: [],
+      iconsObj: {
+        125: 'iconfont icon-user',
+        103: 'iconfont icon-tijikongjian',
+        101: 'iconfont icon-shangpin',
+        102: 'iconfont icon-danju',
+        145: 'iconfont icon-baobiao'
+      }
     }
   },
   created () {
@@ -82,7 +89,12 @@ export default {
   }
   background: #eeeeee;
   .el-aside {
-    background: #304156;
+    .el-menu{
+      height: 100%;
+    }
   }
+}
+.iconfont{
+  margin-right: 10px;
 }
 </style>
