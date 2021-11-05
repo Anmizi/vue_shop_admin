@@ -10,29 +10,41 @@
     </el-header>
     <el-container>
       <!-- 侧边栏 -->
-      <el-aside width="200px">
+      <el-aside :width="isCollapse ? 'auto' : '200px'">
         <el-menu
           :collapse-transition="false"
           :unique-opened="true"
           :collapse="isCollapse"
+          router
           background-color="#304156"
           text-color="#fff"
         >
           <div class="toggleMenu" @click="toggleMenu">|||</div>
-          <el-submenu :index="String(item.id)" v-for="item in menulist" :key="item.id">
+          <el-submenu
+            :index="String(item.id)"
+            v-for="item in menulist"
+            :key="item.id"
+          >
             <template slot="title">
               <i :class="iconsObj[item.id]"></i>
-              <span slot="title">{{item.authName}}</span>
+              <span slot="title">{{ item.authName }}</span>
             </template>
-            <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="String(subItem.id)">
+            <el-menu-item
+              v-for="subItem in item.children"
+              :key="subItem.id"
+              :index="subItem.path"
+            >
               <i class="el-icon-menu"></i>
-              <span slot="title">{{subItem.authName}}</span>
+              <span slot="title">{{ subItem.authName }}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
       <!-- 主区域 -->
-      <el-main>Main</el-main>
+      <el-main>
+        <!-- 路由占位符 -->
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -90,7 +102,7 @@ export default {
         height: 100%;
       }
     }
-    span{
+    span {
       font-size: 30px;
       font-style: bold;
       color: #93c47d;
@@ -98,10 +110,10 @@ export default {
   }
   background: #eeeeee;
   .el-aside {
-    .el-menu{
+    .el-menu {
       overflow: hidden;
       height: 100%;
-      .toggleMenu{
+      .toggleMenu {
         text-align: center;
         color: #fff;
         cursor: pointer;
@@ -109,7 +121,7 @@ export default {
     }
   }
 }
-.iconfont{
+.iconfont {
   margin-right: 10px;
 }
 </style>
