@@ -12,10 +12,13 @@
       <!-- 侧边栏 -->
       <el-aside width="200px">
         <el-menu
+          :collapse-transition="false"
           :unique-opened="true"
+          :collapse="isCollapse"
           background-color="#304156"
           text-color="#fff"
         >
+          <div class="toggleMenu" @click="toggleMenu">|||</div>
           <el-submenu :index="String(item.id)" v-for="item in menulist" :key="item.id">
             <template slot="title">
               <i :class="iconsObj[item.id]"></i>
@@ -39,6 +42,8 @@ export default {
   name: 'Home',
   data () {
     return {
+      // 是否折叠
+      isCollapse: true,
       menulist: [],
       iconsObj: {
         125: 'iconfont icon-user',
@@ -62,6 +67,10 @@ export default {
       console.log(res)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.menulist = res.data
+    },
+    // 切换折叠
+    toggleMenu () {
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -90,7 +99,13 @@ export default {
   background: #eeeeee;
   .el-aside {
     .el-menu{
+      overflow: hidden;
       height: 100%;
+      .toggleMenu{
+        text-align: center;
+        color: #fff;
+        cursor: pointer;
+      }
     }
   }
 }
