@@ -116,7 +116,8 @@ export default {
     span {
       font-size: 30px;
       font-style: bold;
-      color: #93c47d;
+      // color: #93c47d;
+      color: #409eff;
     }
   }
   background: #eeeeee;
