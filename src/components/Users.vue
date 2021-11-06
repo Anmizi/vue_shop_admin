@@ -28,11 +28,37 @@
         <el-table-column prop="role_name" label="角色"> </el-table-column>
         <el-table-column prop="mg_state" label="用户状态">
           <template v-slot="slotProps">
-            <el-switch
-              v-model="slotProps.row.mg_state"
-              disabled
+            <el-switch v-model="slotProps.row.mg_state" disabled> </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180px">
+          <template>
+            <!-- 修改按钮 -->
+            <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+              ></el-button>
+            <!--删除按钮 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+            ></el-button>
+            <!-- 分配角色按钮 -->
+            <el-tooltip
+              class="item"
+              effect="light"
+              content="分配角色"
+              placement="top"
+              :enterable="false"
             >
-            </el-switch>
+              <el-button
+              type="warning"
+              icon="el-icon-setting"
+              size="mini"
+            ></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
