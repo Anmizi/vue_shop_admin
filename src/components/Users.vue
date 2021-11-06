@@ -17,6 +17,25 @@
           <el-button type="primary">添加用户</el-button>
         </el-col>
       </el-row>
+      <!-- 用户列表区域 -->
+      <el-table :data="userlist" style="width: 100%" border stripe>
+        <el-table-column type="index" label="#"></el-table-column>
+        <el-table-column prop="username" label="用户名" width="180">
+        </el-table-column>
+        <el-table-column prop="email" label="邮箱"> </el-table-column>
+        <el-table-column prop="mobile" label="手机号" width="180">
+        </el-table-column>
+        <el-table-column prop="role_name" label="角色"> </el-table-column>
+        <el-table-column prop="mg_state" label="用户状态">
+          <template v-slot="slotProps">
+            <el-switch
+              v-model="slotProps.row.mg_state"
+              disabled
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
@@ -43,6 +62,7 @@ export default {
       const { data: res } = await this.$http.get('users', {
         params: this.queryInfo
       })
+      console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取用户列表失败')
       }
