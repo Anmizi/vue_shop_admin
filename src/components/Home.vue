@@ -12,12 +12,15 @@
       <!-- 侧边栏 -->
       <el-aside :width="isCollapse ? 'auto' : '200px'">
         <el-menu
-          :collapse-transition="false"
-          :unique-opened="true"
-          :collapse="isCollapse"
+          mode="vertical"
           router
           background-color="#304156"
           text-color="#fff"
+          active-text-color="#409eff"
+          :collapse-transition="false"
+          :unique-opened="true"
+          :collapse="isCollapse"
+          :default-active="activePath"
         >
           <div class="toggleMenu" @click="toggleMenu">|||</div>
           <el-submenu
@@ -32,7 +35,8 @@
             <el-menu-item
               v-for="subItem in item.children"
               :key="subItem.id"
-              :index="subItem.path"
+              :index="'/' + subItem.path"
+              @click="saveActivePath('/' + subItem.path)"
             >
               <i class="el-icon-menu"></i>
               <span slot="title">{{ subItem.authName }}</span>
@@ -55,7 +59,7 @@ export default {
   data () {
     return {
       // 是否折叠
-      isCollapse: true,
+      isCollapse: false,
       menulist: [],
       iconsObj: {
         125: 'iconfont icon-user',
@@ -63,11 +67,13 @@ export default {
         101: 'iconfont icon-shangpin',
         102: 'iconfont icon-danju',
         145: 'iconfont icon-baobiao'
-      }
+      },
+      activePath: ''
     }
   },
   created () {
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout () {
@@ -83,6 +89,11 @@ export default {
     // 切换折叠
     toggleMenu () {
       this.isCollapse = !this.isCollapse
+    },
+    // 侧边栏切换高亮效果
+    saveActivePath (path) {
+      window.sessionStorage.setItem('activePath', path)
+      this.activePath = path
     }
   }
 }
