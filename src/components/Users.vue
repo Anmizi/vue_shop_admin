@@ -9,12 +9,23 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getUserList">
-            <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
+          <el-input
+            placeholder="请输入内容"
+            v-model="queryInfo.query"
+            clearable
+            @clear="getUserList"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="getUserList"
+            ></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" @click="addDialogVisible = true"
+            >添加用户</el-button
+          >
         </el-col>
       </el-row>
       <!-- 用户列表区域 -->
@@ -28,7 +39,11 @@
         <el-table-column prop="role_name" label="角色"> </el-table-column>
         <el-table-column prop="mg_state" label="用户状态">
           <template v-slot="slotProps">
-            <el-switch v-model="slotProps.row.mg_state" @change="userStateChange(slotProps.row)"> </el-switch>
+            <el-switch
+              v-model="slotProps.row.mg_state"
+              @change="userStateChange(slotProps.row)"
+            >
+            </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -74,6 +89,43 @@
       >
       </el-pagination>
     </el-card>
+    <!-- 添加用户的对话框 -->
+    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%">
+      <span>
+        <el-form
+          :model="addForm"
+          status-icon
+          :rules="addFormRules"
+          ref="ruleForm"
+          label-width="70px"
+        >
+          <!-- 添加用户表单 -->
+          <el-form-item label="用户名" prop="username">
+            <el-input auto-complete="off" v-model="addForm.username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input
+              v-model="addForm.password"
+              type="password"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="addForm.email" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" prop="mobile">
+            <el-input v-model="addForm.mobile" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+      </span>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addDialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -88,7 +140,42 @@ export default {
         pagesize: 4
       },
       userlist: [],
-      total: 0
+      total: 0,
+      addDialogVisible: false,
+      // 添加表单数据
+      addForm: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 添加表单验证对象
+      addFormRules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          {
+            min: 3,
+            max: 10,
+            message: '长度在 3 到 10 个字符',
+            trigger: 'blur'
+          }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {
+            min: 6,
+            max: 15,
+            message: '长度在 6 到 15 个字符',
+            trigger: 'blur'
+          }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
@@ -119,7 +206,9 @@ export default {
     // 用户状态改变
     async userStateChange (userInfo) {
       console.log(userInfo)
-      const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
+      const { data: res } = await this.$http.put(
+        `users/${userInfo.id}/state/${userInfo.mg_state}`
+      )
       if (res.meta.status !== 200) {
         userInfo.mg_state = !userInfo.mg_state
         return this.$message.error('更新用户状态失败')
