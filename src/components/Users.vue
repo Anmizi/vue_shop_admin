@@ -9,8 +9,8 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getUserList">
+            <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
@@ -28,7 +28,7 @@
         <el-table-column prop="role_name" label="角色"> </el-table-column>
         <el-table-column prop="mg_state" label="用户状态">
           <template v-slot="slotProps">
-            <el-switch v-model="slotProps.row.mg_state" disabled> </el-switch>
+            <el-switch v-model="slotProps.row.mg_state" @change="userStateChange(slotProps.row)"> </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -115,6 +115,16 @@ export default {
     handleCurrentChange (newNum) {
       this.queryInfo.pagenum = newNum
       this.getUserList()
+    },
+    // 用户状态改变
+    async userStateChange (userInfo) {
+      console.log(userInfo)
+      const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
+      if (res.meta.status !== 200) {
+        userInfo.mg_state = !userInfo.mg_state
+        return this.$message.error('更新用户状态失败')
+      }
+      this.$message.success('更新用户状态成功')
     }
   }
 }
