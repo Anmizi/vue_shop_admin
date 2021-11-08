@@ -47,12 +47,13 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
-          <template>
+          <template v-slot="{ row }">
             <!-- 修改按钮 -->
             <el-button
               type="primary"
               icon="el-icon-edit"
               size="mini"
+              @click="showEditDialog(row.id)"
             ></el-button>
             <!--删除按钮 -->
             <el-button
@@ -90,7 +91,12 @@
       </el-pagination>
     </el-card>
     <!-- 添加用户的对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="closeDialog">
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="closeAddDialog"
+    >
       <span>
         <el-form
           :model="addForm"
@@ -121,7 +127,42 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser"
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改用户信息的对话框 -->
+    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%" @close="closeEditDialog">
+      <span>
+        <el-form
+          :model="editForm"
+          status-icon
+          :rules="editFormRules"
+          ref="editFormRef"
+          label-width="80px"
+        >
+          <el-form-item label="用户名" prop="username">
+            <el-input
+              disabled
+              v-model="editForm.username"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input
+              v-model="editForm.email"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" prop="mobile">
+            <el-input
+             v-model="editForm.mobile"
+             autocomplete="off"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUser"
           >确 定</el-button
         >
       </span>
@@ -143,7 +184,8 @@ export default {
     }
     // 手机号验证规则
     const checkMobile = (rule, value, cb) => {
-      const regMobile = /^(0|86|1795)?(13[0-9]|15[0-9]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      const regMobile =
+        /^(0|86|1795)?(13[0-9]|15[0-9]|17[678]|18[0-9]|14[57])[0-9]{8}$/
       if (regMobile.test(value)) {
         return cb()
       }
@@ -158,10 +200,17 @@ export default {
       userlist: [],
       total: 0,
       addDialogVisible: false,
+      editDialogVisible: false,
       // 添加表单数据
       addForm: {
         username: '',
         password: '',
+        email: '',
+        mobile: ''
+      },
+      // 修改用户表单数据
+      editForm: {
+        username: '',
         email: '',
         mobile: ''
       },
@@ -193,6 +242,17 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
+      },
+      // 修改用户表单验证对象
+      editFormRules: {
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
       }
     }
   },
@@ -200,6 +260,7 @@ export default {
     this.getUserList()
   },
   methods: {
+    // 获取用户列表请求
     async getUserList () {
       const { data: res } = await this.$http.get('users', {
         params: this.queryInfo
@@ -210,6 +271,16 @@ export default {
       }
       this.userlist = res.data.users
       this.total = res.data.total
+    },
+    async getUserById (id) {
+      const { data: res } = await this.$http.get(`users/${id}`)
+      if (res.meta.status !== 200) return this.$message.error('获取用户信息失败')
+      // for (const key in this.editForm) {
+      //   if (res.data[key]) {
+      //     this.editForm[key] = res.data[key]
+      //   }
+      // }
+      this.editForm = res.data
     },
     // 每页条数
     handleSizeChange (newSize) {
@@ -233,13 +304,17 @@ export default {
       }
       this.$message.success('更新用户状态成功')
     },
-    // 关闭对话框事件处理函数
-    closeDialog () {
+    // 关闭添加用户对话框
+    closeAddDialog () {
       this.$refs.addFormRef.resetFields()
+    },
+    // 关闭修改用户对话框
+    closeEditDialog () {
+      this.$refs.editFormRef.resetFields()
     },
     // 添加用户操作
     addUser () {
-      this.$refs.addFormRef.validate(async valid => {
+      this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return
         const { data: res } = await this.$http.post('users', this.addForm)
         if (res.meta.status !== 201) {
@@ -251,6 +326,27 @@ export default {
         // 关闭对话框
         this.addDialogVisible = false
       })
+    },
+    // 修改用户操作
+    editUser () {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(`users/${this.editForm.id}`, {
+          email: this.editForm.email,
+          mobile: this.editForm.mobile
+        })
+        if (res.meta.status !== 200) return this.$message.error('修改用户失败')
+        this.$message.success('修改用户成功')
+        // 重新获取用户列表
+        this.getUserList()
+        // 关闭对话框
+        this.editDialogVisible = false
+      })
+    },
+    // 展示修改用户信息对话框
+    showEditDialog (id) {
+      this.getUserById(id)
+      this.editDialogVisible = true
     }
   }
 }
