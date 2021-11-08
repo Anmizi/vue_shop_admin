@@ -133,6 +133,20 @@
 export default {
   name: 'Users',
   data () {
+    const checkEmail = (rule, value, cb) => {
+      const regEmail = /^[a-zA-Z0-9]+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9])+/
+      if (regEmail.test(value)) {
+        return cb()
+      }
+      cb(new Error('请输入合法的邮箱'))
+    }
+    const checkMobile = (rule, value, cb) => {
+      const regMobile = /^(0|86|1795)?(13[0-9]|15[0-9]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (regMobile.test(value)) {
+        return cb()
+      }
+      cb(new Error('请输入合法的手机号'))
+    }
     return {
       queryInfo: {
         query: '',
@@ -170,10 +184,12 @@ export default {
           }
         ],
         email: [
-          { required: true, message: '请输入邮箱', trigger: 'blur' }
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
         ],
         mobile: [
-          { required: true, message: '请输入手机号', trigger: 'blur' }
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
         ]
       }
     }
