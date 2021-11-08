@@ -90,13 +90,13 @@
       </el-pagination>
     </el-card>
     <!-- 添加用户的对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%">
+    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="closeDialog">
       <span>
         <el-form
           :model="addForm"
           status-icon
           :rules="addFormRules"
-          ref="ruleForm"
+          ref="addFormRef"
           label-width="70px"
         >
           <!-- 添加用户表单 -->
@@ -121,7 +121,7 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addDialogVisible = false"
+        <el-button type="primary" @click="addUser"
           >确 定</el-button
         >
       </span>
@@ -133,6 +133,7 @@
 export default {
   name: 'Users',
   data () {
+    // 邮箱验证规则
     const checkEmail = (rule, value, cb) => {
       const regEmail = /^[a-zA-Z0-9]+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9])+/
       if (regEmail.test(value)) {
@@ -140,6 +141,7 @@ export default {
       }
       cb(new Error('请输入合法的邮箱'))
     }
+    // 手机号验证规则
     const checkMobile = (rule, value, cb) => {
       const regMobile = /^(0|86|1795)?(13[0-9]|15[0-9]|17[678]|18[0-9]|14[57])[0-9]{8}$/
       if (regMobile.test(value)) {
@@ -230,6 +232,25 @@ export default {
         return this.$message.error('更新用户状态失败')
       }
       this.$message.success('更新用户状态成功')
+    },
+    // 关闭对话框事件处理函数
+    closeDialog () {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 添加用户操作
+    addUser () {
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('users', this.addForm)
+        if (res.meta.status !== 201) {
+          this.$message.error('添加用户失败')
+        }
+        this.$message.success('添加用户成功')
+        // 重新获取用户列表
+        this.getUserList()
+        // 关闭对话框
+        this.addDialogVisible = false
+      })
     }
   }
 }
