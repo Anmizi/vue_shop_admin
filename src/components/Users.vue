@@ -60,6 +60,7 @@
               type="danger"
               icon="el-icon-delete"
               size="mini"
+              @click="deleteUserById(row.id)"
             ></el-button>
             <!-- 分配角色按钮 -->
             <el-tooltip
@@ -275,11 +276,6 @@ export default {
     async getUserById (id) {
       const { data: res } = await this.$http.get(`users/${id}`)
       if (res.meta.status !== 200) return this.$message.error('获取用户信息失败')
-      // for (const key in this.editForm) {
-      //   if (res.data[key]) {
-      //     this.editForm[key] = res.data[key]
-      //   }
-      // }
       this.editForm = res.data
     },
     // 每页条数
@@ -347,7 +343,26 @@ export default {
     showEditDialog (id) {
       this.getUserById(id)
       this.editDialogVisible = true
+    },
+    // 删除用户操作
+    async deleteUserById (id) {
+      const confirmResult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('取消了删除操作')
+      }
+      const { data: res } = await this.$http.delete(`users/${id}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除用户失败')
+      }
+      this.$message.success('删除用户成功')
+      this.getUserList()
     }
+
   }
 }
 </script>
