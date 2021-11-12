@@ -7,11 +7,9 @@
 <script>
 
 export default {
-  name: 'app',
-  components: {
-  }
+  name: 'app'
 }
 </script>
+<style lang="less" scoped>
 
-<style>
 </style>

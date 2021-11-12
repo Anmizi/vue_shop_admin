@@ -101,6 +101,7 @@ export default {
 
 <style lang="less" scoped>
 .home-container {
+  overflow: hidden;
   height: 100%;
   .el-header {
     padding-left: 0;
@@ -131,6 +132,9 @@ export default {
         cursor: pointer;
       }
     }
+  }
+  .el-main{
+    height: 800px;
   }
 }
 .iconfont {
