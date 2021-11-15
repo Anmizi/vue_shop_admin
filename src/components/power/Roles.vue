@@ -13,18 +13,18 @@
             <el-row v-for="(firstRight,i1) in row.children" :key="firstRight.id" :class="['bdbottom', i1 === 0 ? 'bdtop' : '','vcenter']">
               <!-- 渲染一级权限 -->
               <el-col :span="4">
-                <el-tag>{{firstRight.authName}}</el-tag>
+                <el-tag closable @close="removeRightByID(row,firstRight.id)">{{firstRight.authName}}</el-tag>
                 <i class="el-icon-caret-right"></i>
               </el-col>
               <!-- 渲染二三级权限 -->
               <el-col :span="20">
                 <el-row v-for="(secondRight,i2) in firstRight.children" :key="secondRight.id" :class="[i2 === 0 ? '' : 'bdtop','vcenter']">
                   <el-col :span="6">
-                    <el-tag type="success">{{secondRight.authName}}</el-tag>
+                    <el-tag closable @close="removeRightByID(row,secondRight.id)" type="success">{{secondRight.authName}}</el-tag>
                      <i class="el-icon-caret-right"></i>
                   </el-col>
                   <el-col :span="18">
-                    <el-tag type="warning" v-for="(thirdRight) in secondRight.children" :key="thirdRight.id">{{thirdRight.authName}}</el-tag>
+                    <el-tag type="warning" v-for="(thirdRight) in secondRight.children" :key="thirdRight.id" closable @close="removeRightByID(row,thirdRight.id)">{{thirdRight.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -76,13 +76,29 @@ export default {
   },
   methods: {
     async getRolesList () {
-      const { data: res } = await this.$http.get('/roles')
+      const { data: res } = await this.$http.get('roles')
       console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取角色列表失败')
       }
       this.$message.success('获取角色列表成功')
       this.rolesList = res.data
+    },
+    async removeRightByID (role, rightId) {
+      const confirmResult = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        this.$message.info('取消了删除操作')
+      }
+      const { data: res } = await this.$http.delete(`roles/${role.id}/rights/${rightId}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除权限失败')
+      }
+      this.$message.success('删除权限成功')
+      role.children = res.data
     }
   }
 }
