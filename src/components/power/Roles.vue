@@ -14,6 +14,7 @@
               <!-- 渲染一级权限 -->
               <el-col :span="5">
                 <el-tag>{{item.authName}}</el-tag>
+                <i class="el-icon-caret-right"></i>
               </el-col>
               <!-- 渲染二三级权限 -->
               <el-col :span="19"></el-col>
