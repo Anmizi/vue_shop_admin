@@ -10,14 +10,22 @@
       <el-table :data="rolesList" stripe border>
         <el-table-column width="60px" type="expand">
           <template v-slot="{ row }">
-            <el-row v-for="(item,i1) in row.children" :key="item.id" :class="['bdbottom', i1 === 0 ? 'bdtop' : '']">
+            <el-row v-for="(firstRight,i1) in row.children" :key="firstRight.id" :class="['bdbottom', i1 === 0 ? 'bdtop' : '']">
               <!-- 渲染一级权限 -->
-              <el-col :span="5">
-                <el-tag>{{item.authName}}</el-tag>
+              <el-col :span="4">
+                <el-tag>{{firstRight.authName}}</el-tag>
                 <i class="el-icon-caret-right"></i>
               </el-col>
               <!-- 渲染二三级权限 -->
-              <el-col :span="19"></el-col>
+              <el-col :span="20">
+                <el-row v-for="(secondRight,i2) in firstRight.children" :key="secondRight.id" :class="[i2 === 0 ? '' : 'bdtop']">
+                  <el-col>
+                    <el-tag type="success">{{secondRight.authName}}</el-tag>
+                     <i class="el-icon-caret-right"></i>
+                  </el-col>
+                  <el-col></el-col>
+                </el-row>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
@@ -82,10 +90,10 @@ export default {
   margin-bottom: 100px;
 }
 .el-row{
-  margin: 0 20px;
+  padding: 0 40px;
 }
 .el-tag{
-  margin: 10px;
+  margin: 10px 0;
 }
 .bdtop{
   border-top: 1px solid #eee;
