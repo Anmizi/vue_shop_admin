@@ -19,11 +19,13 @@
               <!-- 渲染二三级权限 -->
               <el-col :span="20">
                 <el-row v-for="(secondRight,i2) in firstRight.children" :key="secondRight.id" :class="[i2 === 0 ? '' : 'bdtop']">
-                  <el-col>
+                  <el-col :span="6">
                     <el-tag type="success">{{secondRight.authName}}</el-tag>
                      <i class="el-icon-caret-right"></i>
                   </el-col>
-                  <el-col></el-col>
+                  <el-col :span="18">
+                    <el-tag type="warning" v-for="(thirdRight) in secondRight.children" :key="thirdRight.id">{{thirdRight.authName}}</el-tag>
+                  </el-col>
                 </el-row>
               </el-col>
             </el-row>
@@ -93,7 +95,7 @@ export default {
   padding: 0 40px;
 }
 .el-tag{
-  margin: 10px 0;
+  margin: 10px 6px;
 }
 .bdtop{
   border-top: 1px solid #eee;
