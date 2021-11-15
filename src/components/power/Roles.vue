@@ -10,7 +10,7 @@
       <el-table :data="rolesList" stripe border>
         <el-table-column width="60px" type="expand">
           <template v-slot="{ row }">
-            <el-row v-for="(firstRight,i1) in row.children" :key="firstRight.id" :class="['bdbottom', i1 === 0 ? 'bdtop' : '']">
+            <el-row v-for="(firstRight,i1) in row.children" :key="firstRight.id" :class="['bdbottom', i1 === 0 ? 'bdtop' : '','vcenter']">
               <!-- 渲染一级权限 -->
               <el-col :span="4">
                 <el-tag>{{firstRight.authName}}</el-tag>
@@ -18,7 +18,7 @@
               </el-col>
               <!-- 渲染二三级权限 -->
               <el-col :span="20">
-                <el-row v-for="(secondRight,i2) in firstRight.children" :key="secondRight.id" :class="[i2 === 0 ? '' : 'bdtop']">
+                <el-row v-for="(secondRight,i2) in firstRight.children" :key="secondRight.id" :class="[i2 === 0 ? '' : 'bdtop','vcenter']">
                   <el-col :span="6">
                     <el-tag type="success">{{secondRight.authName}}</el-tag>
                      <i class="el-icon-caret-right"></i>
@@ -34,7 +34,7 @@
         <el-table-column type="index" label="#"> </el-table-column>
         <el-table-column prop="roleName" label="角色名称"> </el-table-column>
         <el-table-column prop="roleDesc" label="角色描述"> </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="300px">
           <template>
             <!-- 编辑按钮 -->
             <el-button type="primary" icon="el-icon-edit" size="mini"
@@ -102,5 +102,9 @@ export default {
 }
 .bdbottom{
   border-bottom: 1px solid #eee;
+}
+.vcenter{
+  display: flex;
+  align-items: center;
 }
 </style>
