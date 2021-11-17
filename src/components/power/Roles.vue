@@ -67,8 +67,11 @@
               >编辑</el-button
             >
             <!--删除按钮 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini"
-            @click="deleteRole(row.id)"
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="deleteRole(row.id)"
               >删除</el-button
             >
             <!-- 分配权限按钮 -->
@@ -79,7 +82,11 @@
               placement="top"
               :enterable="false"
             >
-              <el-button type="warning" icon="el-icon-setting" size="mini"
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+                @click="showSetRightDialog(row)"
                 >分配权限</el-button
               >
             </el-tooltip>
@@ -94,7 +101,7 @@
       width="50%"
       @close="closeEditRoleDialog"
     >
-       <span>
+      <span>
         <el-form
           :model="editRoleForm"
           status-icon
@@ -103,14 +110,10 @@
           label-width="80px"
         >
           <el-form-item label="角色名称" prop="roleName">
-            <el-input
-              v-model="editRoleForm.roleName"
-            ></el-input>
+            <el-input v-model="editRoleForm.roleName"></el-input>
           </el-form-item>
           <el-form-item label="角色描述" prop="roleDesc">
-            <el-input
-              v-model="editRoleForm.roleDesc"
-            ></el-input>
+            <el-input v-model="editRoleForm.roleDesc"></el-input>
           </el-form-item>
         </el-form>
       </span>
@@ -126,7 +129,7 @@
       width="50%"
       @close="closeAddRoleDialog"
     >
-       <span>
+      <span>
         <el-form
           :model="addRoleForm"
           status-icon
@@ -135,19 +138,38 @@
           label-width="80px"
         >
           <el-form-item label="角色名称" prop="roleName">
-            <el-input
-              v-model="addRoleForm.roleName"
-            ></el-input>
+            <el-input v-model="addRoleForm.roleName"></el-input>
           </el-form-item>
           <el-form-item label="角色描述" prop="roleDesc">
-            <el-input
-              v-model="addRoleForm.roleDesc"
-            ></el-input>
+            <el-input v-model="addRoleForm.roleDesc"></el-input>
           </el-form-item>
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addRole">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 分配权限对话框 -->
+    <el-dialog
+      title="分配角色权限"
+      :visible.sync="setRightDialog"
+      width="50%"
+      @close="closeSetRightDialog"
+    >
+      <span>
+        <el-tree
+          :props="rightProps"
+          :data="rightsList"
+          show-checkbox
+          default-expand-all
+          node-key="id"
+          :default-checked-keys="defKeys"
+        >
+        </el-tree>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightDialog = false">取 消</el-button>
         <el-button type="primary" @click="addRole">确 定</el-button>
       </span>
     </el-dialog>
@@ -163,6 +185,14 @@ export default {
       addDialogVisible: false,
       // 添加角色对话框可见性
       addRoleDialogVisible: false,
+      // 分配权限对话框可见性
+      setRightDialog: false,
+      rightsList: [],
+      rightProps: {
+        children: 'children',
+        label: 'authName'
+      },
+      defKeys: [],
       editRoleForm: {},
       addRoleForm: {
         roleName: '',
@@ -230,12 +260,15 @@ export default {
     },
     // 修改角色
     editRole () {
-      this.$refs.editRoleFormRef.validate(async valid => {
+      this.$refs.editRoleFormRef.validate(async (valid) => {
         if (!valid) return
-        const { data: res } = await this.$http.put('roles/' + this.editRoleForm.roleId, {
-          roleName: this.editRoleForm.roleName,
-          roleDesc: this.editRoleForm.roleDesc
-        })
+        const { data: res } = await this.$http.put(
+          'roles/' + this.editRoleForm.roleId,
+          {
+            roleName: this.editRoleForm.roleName,
+            roleDesc: this.editRoleForm.roleDesc
+          }
+        )
         if (res.meta.status !== 200) {
           return this.$message.error('修改角色失败')
         }
@@ -262,7 +295,7 @@ export default {
     },
     // 添加角色
     addRole () {
-      this.$refs.addRoleFormRef.validate(async valid => {
+      this.$refs.addRoleFormRef.validate(async (valid) => {
         if (!valid) return
         const { data: res } = await this.$http.post('roles', {
           roleName: this.addRoleForm.roleName,
@@ -275,6 +308,27 @@ export default {
         this.addRoleDialogVisible = false
         this.getRolesList()
       })
+    },
+    // 显示分配权限对话框
+    async showSetRightDialog (role) {
+      const { data: res } = await this.$http.get('rights/tree')
+      if (res.meta.status !== 200) {
+        return this.$message.error('权限列表获取失败')
+      }
+      this.rightsList = res.data
+      this.getLeafKeys(role, this.defKeys)
+      this.setRightDialog = true
+    },
+    getLeafKeys (node, arr) {
+      if (!node.children) {
+        return arr.push(node.id)
+      }
+      node.children.forEach(item => {
+        this.getLeafKeys(item, arr)
+      })
+    },
+    closeSetRightDialog () {
+      this.defKeys = []
     }
   }
 }
