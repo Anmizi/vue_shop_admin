@@ -68,6 +68,7 @@
             >
             <!--删除按钮 -->
             <el-button type="danger" icon="el-icon-delete" size="mini"
+            @click="deleteRole(row.id)"
               >删除</el-button
             >
             <!-- 分配权限按钮 -->
@@ -153,7 +154,6 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取角色列表失败')
       }
-      this.$message.success('获取角色列表成功')
       this.rolesList = res.data
     },
     // 通过ID移除指定权限
@@ -206,6 +206,15 @@ export default {
         this.getRolesList()
         this.addDialogVisible = false
       })
+    },
+    // 删除角色
+    async deleteRole (roleId) {
+      const { data: res } = await this.$http.delete('roles/' + roleId)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除角色失败')
+      }
+      this.$message.success('删除角色成功')
+      this.getRolesList()
     }
   }
 }
