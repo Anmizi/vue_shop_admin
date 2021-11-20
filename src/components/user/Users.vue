@@ -74,6 +74,7 @@
                 type="warning"
                 icon="el-icon-setting"
                 size="mini"
+                @click="setRole(row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -132,7 +133,12 @@
       </span>
     </el-dialog>
     <!-- 修改用户信息的对话框 -->
-    <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%" @close="closeEditDialog">
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="closeEditDialog"
+    >
       <span>
         <el-form
           :model="editForm"
@@ -142,30 +148,47 @@
           label-width="80px"
         >
           <el-form-item label="用户名" prop="username">
-            <el-input
-              disabled
-              v-model="editForm.username"
-            ></el-input>
+            <el-input disabled v-model="editForm.username"></el-input>
           </el-form-item>
           <el-form-item label="邮箱" prop="email">
-            <el-input
-              v-model="editForm.email"
-              autocomplete="off"
-            ></el-input>
+            <el-input v-model="editForm.email" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="手机号" prop="mobile">
-            <el-input
-             v-model="editForm.mobile"
-             autocomplete="off"
-            ></el-input>
+            <el-input v-model="editForm.mobile" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editUser"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="editUser">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 分配角色的对话框 -->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="setRoleDialogVisible"
+      width="50%"
+    >
+      <div>
+        <p>当前用户名: {{ userInfo.username }}</p>
+        <p>当前角色名: {{ userInfo.role_name }}</p>
+        <p>
+          分配新角色:
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -202,6 +225,12 @@ export default {
       total: 0,
       addDialogVisible: false,
       editDialogVisible: false,
+      setRoleDialogVisible: false,
+      userInfo: [],
+      // 所有角色列表数据
+      roleList: [],
+      // 选择角色的id值
+      selectedRoleId: '',
       // 添加表单数据
       addForm: {
         username: '',
@@ -275,7 +304,7 @@ export default {
     },
     async getUserById (id) {
       const { data: res } = await this.$http.get(`users/${id}`)
-      if (res.meta.status !== 200) return this.$message.error('获取用户信息失败')
+      if (res.meta.status !== 200) { return this.$message.error('获取用户信息失败') }
       this.editForm = res.data
     },
     // 每页条数
@@ -325,12 +354,15 @@ export default {
     },
     // 修改用户操作
     editUser () {
-      this.$refs.editFormRef.validate(async valid => {
+      this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return
-        const { data: res } = await this.$http.put(`users/${this.editForm.id}`, {
-          email: this.editForm.email,
-          mobile: this.editForm.mobile
-        })
+        const { data: res } = await this.$http.put(
+          `users/${this.editForm.id}`,
+          {
+            email: this.editForm.email,
+            mobile: this.editForm.mobile
+          }
+        )
         if (res.meta.status !== 200) return this.$message.error('修改用户失败')
         this.$message.success('修改用户成功')
         // 重新获取用户列表
@@ -346,11 +378,15 @@ export default {
     },
     // 删除用户操作
     async deleteUserById (id) {
-      const confirmResult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).catch(err => err)
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该用户, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch((err) => err)
 
       if (confirmResult !== 'confirm') {
         return this.$message.info('取消了删除操作')
@@ -361,8 +397,16 @@ export default {
       }
       this.$message.success('删除用户成功')
       this.getUserList()
+    },
+    async setRole (role) {
+      this.userInfo = role
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取权限列表失败')
+      }
+      this.roleList = res.data
+      this.setRoleDialogVisible = true
     }
-
   }
 }
 </script>
