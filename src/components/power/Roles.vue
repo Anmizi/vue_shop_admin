@@ -78,7 +78,7 @@
             <el-tooltip
               class="item"
               effect="light"
-              content="分配角色"
+              content="分配权限"
               placement="top"
               :enterable="false"
             >
@@ -165,12 +165,13 @@
           default-expand-all
           node-key="id"
           :default-checked-keys="defKeys"
+          ref="treeRef"
         >
         </el-tree>
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialog = false">取 消</el-button>
-        <el-button type="primary" @click="addRole">确 定</el-button>
+        <el-button type="primary" @click="allocaRights">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -193,6 +194,8 @@ export default {
         label: 'authName'
       },
       defKeys: [],
+      // 当前要分配权限的角色id
+      roleId: '',
       editRoleForm: {},
       addRoleForm: {
         roleName: '',
@@ -218,7 +221,6 @@ export default {
     // 获取角色列表
     async getRolesList () {
       const { data: res } = await this.$http.get('roles')
-      console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取角色列表失败')
       }
@@ -311,6 +313,7 @@ export default {
     },
     // 显示分配权限对话框
     async showSetRightDialog (role) {
+      this.roleId = role.id
       const { data: res } = await this.$http.get('rights/tree')
       if (res.meta.status !== 200) {
         return this.$message.error('权限列表获取失败')
@@ -329,6 +332,24 @@ export default {
     },
     closeSetRightDialog () {
       this.defKeys = []
+    },
+    // 提交权限
+    async allocaRights () {
+      const keys = [
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys()
+      ]
+      const idStr = keys.join(',')
+      const { data: res } = await this.$http.post(`roles/${this.roleId}/rights`, {
+        rids: idStr
+      })
+      console.log(res)
+      if (res.meta.status !== 200) {
+        return this.$message.error('分配权限失败')
+      }
+      this.$message.success('分配权限成功')
+      this.getRolesList()
+      this.setRightDialog = false
     }
   }
 }
