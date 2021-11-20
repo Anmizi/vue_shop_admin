@@ -169,6 +169,7 @@
       title="分配角色"
       :visible.sync="setRoleDialogVisible"
       width="50%"
+      @close="closeSetRoleDialog"
     >
       <div>
         <p>当前用户名: {{ userInfo.username }}</p>
@@ -188,7 +189,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRoleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser">确 定</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -406,6 +407,22 @@ export default {
       }
       this.roleList = res.data
       this.setRoleDialogVisible = true
+    },
+    // 更新角色信息
+    async saveRoleInfo () {
+      const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, {
+        rid: this.selectedRoleId
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('更新角色失败')
+      }
+      this.$message.success('更新角色成功')
+      this.getUserList()
+      this.setRoleDialogVisible = false
+    },
+    // 分配角色对话框关闭
+    closeSetRoleDialog () {
+      this.selectedRoleId = ''
     }
   }
 }
