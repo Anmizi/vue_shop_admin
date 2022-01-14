@@ -51,12 +51,18 @@
           >
         </template>
         <!-- 操作 -->
-        <template slot="opt">
-          <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+        <template slot="opt" slot-scope="scope">
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            @click="editCate(scope.row)"
+          ></el-button>
           <el-button
             type="danger"
             icon="el-icon-delete"
             size="mini"
+            @click="deleteCate(scope.row.cat_id)"
           ></el-button>
         </template>
       </tree-table>
@@ -91,7 +97,7 @@
             <el-input v-model="addCateForm.cat_name"></el-input>
           </el-form-item>
           <el-form-item label="父级分类: ">
-               <!-- options指定数据源 -->
+            <!-- options指定数据源 -->
             <el-cascader
               v-model="selectedKeys"
               :options="parentsCateList"
@@ -104,7 +110,31 @@
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCateConfirm"
+        <el-button type="primary" @click="addCateConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 编辑分类对话框 -->
+    <el-dialog
+      title="编辑分类"
+      :visible.sync="editCateDialogVisible"
+      width="50%"
+    >
+      <span>
+        <el-form
+          :model="editCateForm"
+          :rules="editCateRules"
+          ref="editCateForm"
+          label-width="100px"
+          @close="editCateDialogclosed"
+        >
+          <el-form-item label="分类名称" prop="cat_name">
+            <el-input v-model="editCateForm.cat_name"></el-input>
+          </el-form-item
+        ></el-form>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editCateDialogclosed">取 消</el-button>
+        <el-button type="primary" @click="editCateConfirm"
           >确 定</el-button
         >
       </span>
@@ -151,6 +181,8 @@ export default {
       ],
       // 添加分类对话框的显示与隐藏
       addCateDialogVisible: false,
+      // 编辑分类对话框的显示与隐藏
+      editCateDialogVisible: false,
       addCateForm: {
         cat_name: '',
         // 父级分类的id
@@ -158,8 +190,17 @@ export default {
         // 默认添加一级分类
         cat_level: 0
       },
+      editCateForm: {
+        cat_name: '',
+        cat_id: ''
+      },
       // 表单验证规则
       addCateRules: {
+        cat_name: [
+          { required: true, message: '请输入分类名称', trigger: 'blur' }
+        ]
+      },
+      editCateRules: {
         cat_name: [
           { required: true, message: '请输入分类名称', trigger: 'blur' }
         ]
@@ -224,7 +265,8 @@ export default {
     // 选择项发生变化时触发
     parentsCateChanged () {
       if (this.selectedKeys.length > 0) {
-        this.addCateForm.cat_pid = this.selectedKeys[this.selectedKeys.length - 1]
+        this.addCateForm.cat_pid =
+          this.selectedKeys[this.selectedKeys.length - 1]
         this.addCateForm.cat_level = this.selectedKeys.length
       } else {
         this.addCateForm.cat_pid = 0
@@ -233,11 +275,14 @@ export default {
     },
     // 添加分类表单确认事件
     addCateConfirm () {
-      this.$refs.addCateForm.validate(async valid => {
+      this.$refs.addCateForm.validate(async (valid) => {
         if (!valid) return
-        const { data: res } = await this.$http.post('categories', this.addCateForm)
+        const { data: res } = await this.$http.post(
+          'categories',
+          this.addCateForm
+        )
         if (res.meta.status !== 201) {
-          this.$message.error('添加分类失败!')
+          return this.$message.error('添加分类失败!')
         }
         this.$message.success('添加分类成功!')
         this.getCateList()
@@ -250,6 +295,41 @@ export default {
       this.selectedKeys = []
       this.addCateForm.cat_pid = 0
       this.addCateForm.cat_level = 0
+    },
+    // 编辑分类事件
+    editCate (cateInfo) {
+      this.editCateDialogVisible = true
+      this.editCateForm.cat_name = cateInfo.cat_name
+      this.editCateForm.cat_id = cateInfo.cat_id
+    },
+    // 编辑分类对话框关闭事件
+    editCateDialogclosed () {
+      this.editCateDialogVisible = false
+      this.$refs.editCateForm.resetFields()
+      this.editCateForm.cat_name = ''
+      this.editCateForm.cat_id = ''
+    },
+    // 编辑分类确定事件
+    editCateConfirm () {
+      this.$refs.editCateForm.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put('categories/' + this.editCateForm.cat_id, { cat_name: this.editCateForm.cat_name })
+        if (res.meta.status !== 200) {
+          return this.$message.error('提交编辑分类失败!')
+        }
+        this.$message.success('提交编辑分类成功!')
+        this.getCateList()
+        this.editCateDialogVisible = false
+      })
+    },
+    // 删除分类事件
+    async deleteCate (cateId) {
+      const { data: res } = await this.$http.delete('categories/' + cateId)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除分类失败!')
+      }
+      this.$message.success('删除分类成功!')
+      this.getCateList()
     }
   }
 }
@@ -262,7 +342,7 @@ export default {
 .el-card {
   margin-bottom: 100px;
 }
-.el-cascader{
+.el-cascader {
   width: 100%;
 }
 </style>
