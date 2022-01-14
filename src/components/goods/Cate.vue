@@ -11,7 +11,7 @@
     <el-card>
       <el-row>
         <el-col>
-          <el-button type="primary">添加分类</el-button>
+          <el-button type="primary" @click="addCate">添加分类</el-button>
         </el-col>
       </el-row>
       <!-- 表格 -->
@@ -53,20 +53,54 @@
         <!-- 操作 -->
         <template slot="opt">
           <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+          ></el-button>
         </template>
       </tree-table>
       <!-- 分页 -->
       <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="queryInfo.pagenum"
-      :page-sizes="[5, 10, 15]"
-      :page-size="queryInfo.pagesize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[5, 10, 15]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
+
+    <!-- 添加分类对话框-->
+    <el-dialog
+      title="添加分类"
+      :visible.sync="addCateDialogVisible"
+      width="50%"
+    >
+      <span>
+        <el-form
+          :model="addCateForm"
+          :rules="addCateRules"
+          ref="addCateForm"
+          label-width="100px"
+        >
+          <el-form-item label="分类名称: " prop="cat_name">
+            <el-input v-model="addCateForm.cat_name"></el-input>
+          </el-form-item>
+          <el-form-item label="父级分类: ">
+            <el-input v-model="addCateForm.cat_name"></el-input>
+          </el-form-item>
+        </el-form>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addCateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addCateDialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -106,7 +140,24 @@ export default {
           type: 'template',
           template: 'opt'
         }
-      ]
+      ],
+      // 添加分类对话框的显示与隐藏
+      addCateDialogVisible: false,
+      addCateForm: {
+        cat_name: '',
+        // 父级分类的id
+        cat_pid: 0,
+        // 默认添加一级分类
+        cat_level: 0
+      },
+      // 表单验证规则
+      addCateRules: {
+        cat_name: [
+          { required: true, message: '请输入分类名称', trigger: 'blur' }
+        ]
+      },
+      // 父级分类列表
+      parentsCateList: []
     }
   },
   created () {
@@ -133,17 +184,33 @@ export default {
     handleSizeChange (currentPageSize) {
       this.queryInfo.pagesize = currentPageSize
       this.getCateList()
+    },
+    // 添加分类按钮点击事件
+    addCate () {
+      this.addCateDialogVisible = true
+      this.getParentsList()
+    },
+    // 获取父级分类数据列表
+    async getParentsList () {
+      const { data: res } = await this.$http.get('categories', {
+        params: {
+          type: 2
+        }
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取父级分类列表失败!')
+      }
+      this.parentsCateList = res.data
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.el-row{
+.el-row {
   padding-bottom: 20px;
 }
-.el-card{
+.el-card {
   margin-bottom: 100px;
 }
-
 </style>
