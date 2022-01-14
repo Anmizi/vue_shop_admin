@@ -92,19 +92,18 @@
           <el-form-item label="父级分类: ">
                <!-- options指定数据源 -->
             <el-cascader
-              :v-model="selectedKeys"
+              v-model="selectedKeys"
               :options="parentsCateList"
               :props="cascadeProps"
-              :change="parentsCateChanged"
+              @change="parentsCateChanged"
               clearable
-              change-on-select
             ></el-cascader>
           </el-form-item>
         </el-form>
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCateDialogVisible = false"
+        <el-button type="primary" @click="addCateConfirm"
           >确 定</el-button
         >
       </span>
@@ -169,6 +168,7 @@ export default {
       // 指定级联选择器配置对象
       cascadeProps: {
         expandTrigger: 'hover',
+        checkStrictly: true,
         value: 'cat_id',
         label: 'cat_name',
         children: 'children'
@@ -222,7 +222,17 @@ export default {
     },
     // 选择项发生变化时触发
     parentsCateChanged () {
-      console.log(this.selectedKeys)
+      if (this.selectedKeys.length > 0) {
+        this.addCateForm.cat_pid = this.selectedKeys[this.selectedKeys.length - 1]
+        this.addCateForm.cat_level = this.selectedKeys.length
+      } else {
+        this.addCateForm.cat_pid = 0
+        this.addCateForm.cat_level = 0
+      }
+    },
+    // 添加分类表单确认事件
+    addCateConfirm () {
+      console.log(this.addCateForm)
     }
   }
 }
