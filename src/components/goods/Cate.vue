@@ -57,6 +57,15 @@
         </template>
       </tree-table>
       <!-- 分页 -->
+      <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="queryInfo.pagenum"
+      :page-sizes="[5, 10, 15]"
+      :page-size="queryInfo.pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
     </el-card>
   </div>
 </template>
@@ -114,6 +123,16 @@ export default {
       console.log(res.data)
       this.catelist = res.data.result
       this.total = res.data.total
+    },
+    // 当前页更改触发
+    handleCurrentChange (currentPage) {
+      this.queryInfo.pagenum = currentPage
+      this.getCateList()
+    },
+    // 每页显示条数更改时触发
+    handleSizeChange (currentPageSize) {
+      this.queryInfo.pagesize = currentPageSize
+      this.getCateList()
     }
   }
 }
@@ -121,6 +140,10 @@ export default {
 
 <style lang="less" scoped>
 .el-row{
-  margin-bottom: 20px;
+  padding-bottom: 20px;
 }
+.el-card{
+  margin-bottom: 100px;
+}
+
 </style>

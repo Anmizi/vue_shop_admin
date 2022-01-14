@@ -134,7 +134,7 @@ export default {
     }
   }
   .el-main{
-    height: 800px;
+    height: 100vh;
   }
 }
 .iconfont {
