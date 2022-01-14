@@ -14,3 +14,7 @@ html,body,#app{
 .el-pagination{
   margin-top: 20px;
 }
+/* 解决options数据过大溢出问题 */
+.el-cascader-menu{
+  height: 300px;
+}

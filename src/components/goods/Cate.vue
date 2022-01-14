@@ -90,7 +90,15 @@
             <el-input v-model="addCateForm.cat_name"></el-input>
           </el-form-item>
           <el-form-item label="父级分类: ">
-            <el-input v-model="addCateForm.cat_name"></el-input>
+               <!-- options指定数据源 -->
+            <el-cascader
+              :v-model="selectedKeys"
+              :options="parentsCateList"
+              :props="cascadeProps"
+              :change="parentsCateChanged"
+              clearable
+              change-on-select
+            ></el-cascader>
           </el-form-item>
         </el-form>
       </span>
@@ -157,7 +165,16 @@ export default {
         ]
       },
       // 父级分类列表
-      parentsCateList: []
+      parentsCateList: [],
+      // 指定级联选择器配置对象
+      cascadeProps: {
+        expandTrigger: 'hover',
+        value: 'cat_id',
+        label: 'cat_name',
+        children: 'children'
+      },
+      // 选中的父级分类的id数组
+      selectedKeys: []
     }
   },
   created () {
@@ -187,8 +204,8 @@ export default {
     },
     // 添加分类按钮点击事件
     addCate () {
-      this.addCateDialogVisible = true
       this.getParentsList()
+      this.addCateDialogVisible = true
     },
     // 获取父级分类数据列表
     async getParentsList () {
@@ -201,6 +218,11 @@ export default {
         return this.$message.error('获取父级分类列表失败!')
       }
       this.parentsCateList = res.data
+      console.log(res.data)
+    },
+    // 选择项发生变化时触发
+    parentsCateChanged () {
+      console.log(this.selectedKeys)
     }
   }
 }
@@ -212,5 +234,8 @@ export default {
 }
 .el-card {
   margin-bottom: 100px;
+}
+.el-cascader{
+  width: 100%;
 }
 </style>
