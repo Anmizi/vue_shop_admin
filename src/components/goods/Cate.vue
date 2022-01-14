@@ -77,6 +77,7 @@
     <el-dialog
       title="添加分类"
       :visible.sync="addCateDialogVisible"
+      @closed="addCateDialogClosed"
       width="50%"
     >
       <span>
@@ -233,6 +234,13 @@ export default {
     // 添加分类表单确认事件
     addCateConfirm () {
       console.log(this.addCateForm)
+    },
+    // 监听点击分类表单关闭事件
+    addCateDialogClosed () {
+      this.$refs.addCateForm.resetFields()
+      this.selectedKeys = []
+      this.addCateForm.cat_pid = 0
+      this.addCateForm.cat_level = 0
     }
   }
 }
