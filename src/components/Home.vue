@@ -135,9 +135,6 @@ export default {
       }
     }
   }
-  .el-main{
-    // height: 100vh;
-  }
 }
 .iconfont {
   margin-right: 10px;
