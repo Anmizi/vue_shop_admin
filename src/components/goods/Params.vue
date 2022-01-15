@@ -50,8 +50,8 @@
               label="参数名称"
             ></el-table-column>
             <el-table-column label="操作">
-              <template slot-scope="">
-                <el-button size="mini" type="primary" @click="editDialogVisible = true">编辑</el-button>
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" @click="showEditDialog(scope.row.attr_id)">编辑</el-button>
                 <el-button size="mini" type="danger">删除</el-button>
               </template>
             </el-table-column>
@@ -75,8 +75,8 @@
               label="参数名称"
             ></el-table-column>
             <el-table-column label="操作">
-              <template slot-scope="">
-                <el-button size="mini" type="primary" @click="editDialogVisible = true">编辑</el-button>
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" @click="showEditDialog(scope.row.attr_id)">编辑</el-button>
                 <el-button size="mini" type="danger">删除</el-button>
               </template>
             </el-table-column>
@@ -172,9 +172,7 @@ export default {
       // 添加参数的表单数据对象
       addForm: {},
       // 编辑参数的表单数据对象
-      editForm: {
-
-      },
+      editForm: {},
       // 添加表单的验证规则
       addFormRules: {
         attr_name: [
@@ -258,9 +256,34 @@ export default {
         this.addDialogVisible = false
       })
     },
+    // 展示编辑表单
+    async showEditDialog (attrId) {
+      this.editDialogVisible = true
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes/${attrId}`, {
+        params: {
+          attr_sel: this.activeName
+        }
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数信息失败!')
+      }
+      this.editForm = res.data
+    },
     // 点击按钮，编辑参数
     editParams () {
-
+      this.$refs.editForm.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(`categories/${this.cateId}/attributes/${this.editForm.attr_id}`, {
+          attr_name: this.editForm.attr_name,
+          attr_sel: this.editForm.attr_sel
+        })
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改参数失败!')
+        }
+        this.$message.success('修改参数成功')
+        this.getParamsData()
+        this.editDialogVisible = false
+      })
     }
   },
   computed: {
