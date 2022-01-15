@@ -32,8 +32,16 @@
 
       <!-- tab页签区域 -->
       <el-tabs v-model="activeName" @tab-click="tabsClick">
-        <el-tab-pane label="动态参数" name="first">动态参数</el-tab-pane>
-        <el-tab-pane label="静态属性" name="second">动态参数</el-tab-pane>
+        <el-tab-pane label="动态参数" name="many">
+          <el-button type="primary" size="small" :disabled="isBtnDisabled">
+            添加参数
+          </el-button>
+        </el-tab-pane>
+        <el-tab-pane label="静态属性" name="only">
+          <el-button type="primary" size="small" :disabled="isBtnDisabled">
+            添加属性
+          </el-button>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -56,7 +64,7 @@ export default {
       // 级联级默认选项值
       selectedKeys: [],
       // 页签选中值
-      activeName: 'second'
+      activeName: 'many'
     }
   },
   created () {
@@ -78,14 +86,43 @@ export default {
     },
     // 级联选择器选中节点变化触发事件
     changeSelectedKeys () {
+      this.getParamsData()
+    },
+    // tab页签点击切换触发
+    tabsClick () {
+      this.getParamsData()
+    },
+    // 获取参数列表数据
+    async getParamsData () {
       // 如果选中的不是三级分类
       if (this.selectedKeys.length !== 3) {
         this.selectedKeys = []
+        return
       }
       // 选中的为三级分类
+      const { data: res } = await this.$http.get(
+        `categories/${this.cateId}/attributes`,
+        { params: { sel: this.activeName } }
+      )
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数列表失败!')
+      }
+      console.log(res.data)
+    }
+  },
+  computed: {
+    isBtnDisabled () {
+      if (this.selectedKeys.length !== 3) {
+        return true
+      }
+      return false
     },
-    // tab页签点击切换触发
-    tabsClick () {}
+    cateId () {
+      if (this.selectedKeys.length === 3) {
+        return this.selectedKeys[2]
+      }
+      return null
+    }
   }
 }
 </script>
