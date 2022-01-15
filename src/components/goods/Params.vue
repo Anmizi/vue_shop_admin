@@ -36,11 +36,41 @@
           <el-button type="primary" size="small" :disabled="isBtnDisabled">
             添加参数
           </el-button>
+          <!-- 表格 -->
+          <el-table :data="manyTableData" border stripe>
+            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="index" label="#"></el-table-column>
+            <el-table-column
+              prop="attr_name"
+              label="参数名称"
+            ></el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="">
+                <el-button size="mini" type="primary">编辑</el-button>
+                <el-button size="mini" type="danger">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-tab-pane>
         <el-tab-pane label="静态属性" name="only">
           <el-button type="primary" size="small" :disabled="isBtnDisabled">
             添加属性
           </el-button>
+          <!-- 表格 -->
+          <el-table :data="onlyTableData" border stripe>
+            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="index" label="#"></el-table-column>
+            <el-table-column
+              prop="attr_name"
+              label="参数名称"
+            ></el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="">
+                <el-button size="mini" type="primary">编辑</el-button>
+                <el-button size="mini" type="danger">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -64,7 +94,11 @@ export default {
       // 级联级默认选项值
       selectedKeys: [],
       // 页签选中值
-      activeName: 'many'
+      activeName: 'many',
+      // 动态参数
+      manyTableData: [],
+      // 静态属性
+      onlyTableData: []
     }
   },
   created () {
@@ -107,7 +141,11 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取参数列表失败!')
       }
-      console.log(res.data)
+      if (this.activeName === 'many') {
+        this.manyTableData = res.data
+      } else if (this.activeName === 'only') {
+        this.onlyTableData = res.data
+      }
     }
   },
   computed: {
