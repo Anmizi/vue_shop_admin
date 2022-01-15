@@ -21,10 +21,10 @@
         <el-col>
           <span>选择商品分类: </span>
           <el-cascader
-            v-model="value"
-            :options="options"
-            :props="{ expandTrigger: 'hover' }"
-            @change="handleChange"
+            v-model="selectedKeys"
+            :options="cateList"
+            :props="cascaderProps"
+            @change="changeSelectedKeys"
           ></el-cascader>
         </el-col>
       </el-row>
@@ -34,7 +34,44 @@
 
 <script>
 export default {
-  name: 'Params'
+  name: 'Params',
+  data () {
+    return {
+      // 分类列表数据
+      cateList: [],
+      // 级联选择器配置
+      cascaderProps: {
+        expandTrigger: 'hover',
+        value: 'cat_id',
+        label: 'cat_name',
+        children: 'children'
+      },
+      // 级联级默认选项值
+      selectedKeys: []
+    }
+  },
+  created () {
+    this.getCateList()
+  },
+  methods: {
+    // 获取分类列表
+    async getCateList () {
+      const { data: res } = await this.$http.get('categories', {
+        params: {
+          type: 3
+        }
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取分类列表失败!')
+      }
+      // console.log(res.data)
+      this.cateList = res.data
+    },
+    // 级联选择器选中节点变化触发事件
+    changeSelectedKeys () {
+      console.log(this.selectedKeys)
+    }
+  }
 }
 </script>
 
