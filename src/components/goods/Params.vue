@@ -33,7 +33,12 @@
       <!-- tab页签区域 -->
       <el-tabs v-model="activeName" @tab-click="tabsClick">
         <el-tab-pane label="动态参数" name="many">
-          <el-button type="primary" size="small" :disabled="isBtnDisabled">
+          <el-button
+            type="primary"
+            size="small"
+            :disabled="isBtnDisabled"
+            @click="addDialogVisible = true"
+          >
             添加参数
           </el-button>
           <!-- 表格 -->
@@ -53,7 +58,12 @@
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="静态属性" name="only">
-          <el-button type="primary" size="small" :disabled="isBtnDisabled">
+          <el-button
+            type="primary"
+            size="small"
+            :disabled="isBtnDisabled"
+            @click="addDialogVisible = true"
+          >
             添加属性
           </el-button>
           <!-- 表格 -->
@@ -74,6 +84,34 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
+
+    <!-- 添加参数对话框 -->
+    <el-dialog
+      :title="'添加' + titleText"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
+      <span>
+        <el-form
+          :model="addForm"
+          :rules="addFormRules"
+          ref="addForm"
+          label-width="100px"
+        >
+          <el-form-item :label="titleText" prop="attr_name">
+            <el-input v-model="addForm
+            .attr_name"></el-input>
+          </el-form-item
+        ></el-form>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addParams"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -98,7 +136,17 @@ export default {
       // 动态参数
       manyTableData: [],
       // 静态属性
-      onlyTableData: []
+      onlyTableData: [],
+      // 添加参数对话框可见性
+      addDialogVisible: false,
+      // 添加参数的表单数据对象
+      addForm: {},
+      // 表单验证对象
+      addFormRules: {
+        attr_name: [
+          { required: true, message: '请输入参数名称', trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
@@ -146,6 +194,25 @@ export default {
       } else if (this.activeName === 'only') {
         this.onlyTableData = res.data
       }
+    },
+    // 添加参数对话框关闭事件
+    addDialogClosed () {
+      this.$refs.addForm.resetFields()
+    },
+    // 点击按钮，添加参数
+    addParams () {
+      this.$refs.addForm.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post(`categories/${this.cateId}}/attributes`, {
+          attr_name: this.addForm.attr_name,
+          attr_sel: this.activeName
+        })
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加参数失败!')
+        }
+        this.getParamsData()
+        this.addDialogVisible = false
+      })
     }
   },
   computed: {
@@ -160,6 +227,13 @@ export default {
         return this.selectedKeys[2]
       }
       return null
+    },
+    titleText () {
+      if (this.activeName === 'many') {
+        return '动态参数'
+      } else {
+        return '静态属性'
+      }
     }
   }
 }
@@ -171,5 +245,8 @@ export default {
 }
 .el-cascader {
   width: 250px;
+}
+.el-card{
+  margin-bottom: 60px;
 }
 </style>
