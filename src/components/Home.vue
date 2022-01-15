@@ -8,7 +8,7 @@
       <span>Vue_shop后台管理系统</span>
       <el-button type="info" @click="logout">退出登录</el-button>
     </el-header>
-    <el-container>
+    <el-container class="main-container">
       <!-- 侧边栏 -->
       <el-aside :width="isCollapse ? 'auto' : '200px'">
         <el-menu
@@ -102,6 +102,9 @@ export default {
 .home-container {
   overflow: hidden;
   height: 100%;
+  .main-container{
+    height: 100%;
+  }
   .el-header {
     padding-left: 0;
     display: flex;
@@ -133,7 +136,7 @@ export default {
     }
   }
   .el-main{
-    height: 100vh;
+    // height: 100vh;
   }
 }
 .iconfont {
