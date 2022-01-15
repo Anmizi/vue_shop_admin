@@ -16,6 +16,7 @@
         show-icon
       >
       </el-alert>
+
       <!-- 选择商品分类区域 -->
       <el-row class="cat_opts">
         <el-col>
@@ -28,6 +29,12 @@
           ></el-cascader>
         </el-col>
       </el-row>
+
+      <!-- tab页签区域 -->
+      <el-tabs v-model="activeName" @tab-click="tabsClick">
+        <el-tab-pane label="动态参数" name="first">动态参数</el-tab-pane>
+        <el-tab-pane label="静态属性" name="second">动态参数</el-tab-pane>
+      </el-tabs>
     </el-card>
   </div>
 </template>
@@ -47,7 +54,9 @@ export default {
         children: 'children'
       },
       // 级联级默认选项值
-      selectedKeys: []
+      selectedKeys: [],
+      // 页签选中值
+      activeName: 'second'
     }
   },
   created () {
@@ -69,14 +78,23 @@ export default {
     },
     // 级联选择器选中节点变化触发事件
     changeSelectedKeys () {
-      console.log(this.selectedKeys)
-    }
+      // 如果选中的不是三级分类
+      if (this.selectedKeys.length !== 3) {
+        this.selectedKeys = []
+      }
+      // 选中的为三级分类
+    },
+    // tab页签点击切换触发
+    tabsClick () {}
   }
 }
 </script>
 
 <style lang="less" scoped>
-.cat_opts{
-  margin-top: 20px;
+.cat_opts {
+  margin: 20px 0;
+}
+.el-cascader {
+  width: 250px;
 }
 </style>
