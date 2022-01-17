@@ -10,12 +10,12 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getGoodsList()">
+            <el-button slot="append" icon="el-icon-search"  @click="searchGoods"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary">添加商品</el-button>
+          <el-button type="primary" @click="addGoods">添加商品</el-button>
         </el-col>
       </el-row>
       <!-- 商品列表数据表格 -->
@@ -68,7 +68,7 @@ export default {
         pagenum: 1,
         // 每页显示条数
         pagesize: 10,
-        // 查询参数
+        // 查询商品参数
         query: ''
       },
       // 商品列表总数
@@ -101,6 +101,14 @@ export default {
     handleCurrentChange (newPage) {
       this.queryInfo.pagenum = newPage
       this.getGoodsList()
+    },
+    // 查询商品列表
+    searchGoods () {
+      this.getGoodsList()
+    },
+    // 点击添加商品按钮触发
+    addGoods () {
+
     }
   }
 }
