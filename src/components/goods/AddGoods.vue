@@ -16,7 +16,13 @@
         :closable="false"
       >
       </el-alert>
-      <el-steps :space="200" :active="activeIndex" finish-status="success" align-center>
+      <!-- 步骤条区域 -->
+      <el-steps
+        :space="200"
+        :active="activeIndex - 0"
+        finish-status="success"
+        align-center
+      >
         <el-step title="基本信息"></el-step>
         <el-step title="商品参数"></el-step>
         <el-step title="商品属性"></el-step>
@@ -24,6 +30,14 @@
         <el-step title="商品内容"></el-step>
         <el-step title="完成"></el-step>
       </el-steps>
+      <!-- tab栏切换区域 -->
+      <el-tabs  v-model="activeIndex" tab-position="left" style="height: 200px" @tab-click="tabClick">
+        <el-tab-pane label="基本信息">用户管理</el-tab-pane>
+        <el-tab-pane label="商品参数">配置管理</el-tab-pane>
+        <el-tab-pane label="商品属性">角色管理</el-tab-pane>
+        <el-tab-pane label="商品图片">定时任务补偿</el-tab-pane>
+         <el-tab-pane label="商品内容">定时任务补偿</el-tab-pane>
+      </el-tabs>
     </el-card>
   </div>
 </template>
@@ -33,17 +47,22 @@ export default {
   name: 'AddGoods',
   data () {
     return {
-      activeIndex: 0
+      activeIndex: '0'
+    }
+  },
+  methods: {
+    tabClick () {
+
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.el-steps{
+.el-steps {
   margin: 15px 0;
 }
-/deep/ .el-step__title{
+/deep/ .el-step__title {
   font-size: 14px;
 }
 </style>
