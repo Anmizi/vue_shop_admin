@@ -24,10 +24,14 @@
         <el-table-column prop="goods_name" label="商品名称"> </el-table-column>
         <el-table-column prop="goods_price" label="商品价格(元)" width="100">
         </el-table-column>
-        <el-table-column prop="goods_number" label="商品数量" width="100"></el-table-column>
+        <el-table-column
+          prop="goods_number"
+          label="商品数量"
+          width="100"
+        ></el-table-column>
         <el-table-column label="创建时间" width="100">
           <template slot-scope="scope">
-            {{scope.row.add_time | dateFormat}}
+            {{ scope.row.add_time | dateFormat }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="250">
@@ -37,6 +41,18 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页器区域 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[5, 10, 15, 20]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        background
+      >
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -54,13 +70,16 @@ export default {
         pagesize: 10,
         // 查询参数
         query: ''
-      }
+      },
+      // 商品列表总数
+      total: 0
     }
   },
   created () {
     this.getGoodsList()
   },
   methods: {
+    // 获取商品列表数据
     async getGoodsList () {
       const { data: res } = await this.$http.get('goods', {
         params: this.queryInfo
@@ -71,6 +90,17 @@ export default {
       this.$message.success('获取商品列表数据成功')
       console.log(res.data)
       this.goodsList = res.data.goods
+      this.total = res.data.total
+    },
+    // 每页条数改变时触发
+    handleSizeChange (newSize) {
+      this.queryInfo.pagesize = newSize
+      this.getGoodsList()
+    },
+    // 当前页改变时触发
+    handleCurrentChange (newPage) {
+      this.queryInfo.pagenum = newPage
+      this.getGoodsList()
     }
   }
 }
