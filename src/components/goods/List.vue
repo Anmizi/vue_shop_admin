@@ -15,7 +15,7 @@
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="addGoods">添加商品</el-button>
+          <el-button type="primary" @click="goAddPage">添加商品</el-button>
         </el-col>
       </el-row>
       <!-- 商品列表数据表格 -->
@@ -104,9 +104,9 @@ export default {
     searchGoods () {
       this.getGoodsList()
     },
-    // 点击添加商品按钮触发
-    addGoods () {
-
+    // 点击添加商品按钮触发,前往添加商品页面
+    goAddPage () {
+      this.$router.push('/goods/add')
     },
     // 删除商品信息
     async deleteGoods (goodsId) {
