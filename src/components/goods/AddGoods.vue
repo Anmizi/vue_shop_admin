@@ -116,7 +116,9 @@ export default {
         label: 'cat_name',
         value: 'cat_id',
         children: 'children'
-      }
+      },
+      // 动态参数列表数据
+      manyTableList: []
     }
   },
   created () {
@@ -144,7 +146,29 @@ export default {
         return false
       }
     },
-    tabClick () {}
+    // 切换tabs标签栏触发
+    async tabClick () {
+      // 当点击的是商品参数标签时
+      if (this.activeIndex === '1') {
+        const { data: res } = await this.$http.get(`categories/${this.cateid}/attributes`, {
+          params: {
+            sel: 'many'
+          }
+        })
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取动态参数列表失败!')
+        }
+        this.manyTableList = res.data
+      }
+    }
+  },
+  computed: {
+    cateid () {
+      if (this.addForm.goods_cat.length === 3) {
+        return this.addForm.goods_cat[2]
+      }
+      return null
+    }
   }
 }
 </script>
