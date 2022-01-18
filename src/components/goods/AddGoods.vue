@@ -42,6 +42,7 @@
           v-model="activeIndex"
           tab-position="left"
           @tab-click="tabClick"
+          :before-leave="beforeTabLeave"
         >
           <el-tab-pane label="基本信息">
             <el-form-item label="商品名称" prop="goods_name">
@@ -132,7 +133,16 @@ export default {
     },
     // 级联选择器选中项改变触发
     changeSelectedKeys () {
-
+      if (this.addForm.goods_cat.length !== 3) {
+        this.addForm.goods_cat = []
+      }
+    },
+    // tabs标签页切换
+    beforeTabLeave (activeName, oldActiveName) {
+      if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
+        this.$message.error('请先选择商品分类!')
+        return false
+      }
     },
     tabClick () {}
   }
