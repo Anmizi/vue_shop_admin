@@ -129,6 +129,8 @@ export default {
       },
       // 动态参数列表数据
       manyTableList: [],
+      // 静态属性列表数据
+      onlyTableList: [],
       // 复选框组默认值
       checkList: []
     }
@@ -143,7 +145,7 @@ export default {
         return this.$message.error('获取商品分类数据失败!')
       }
       this.catelist = res.data
-      console.log(this.catelist)
+      // console.log(this.catelist)
     },
     // 级联选择器选中项改变触发
     changeSelectedKeys () {
@@ -173,12 +175,26 @@ export default {
         if (res.meta.status !== 200) {
           return this.$message.error('获取动态参数列表失败!')
         }
-        console.log(res.data)
+        // console.log(res.data)
         res.data.forEach(item => {
           item.attr_vals = item.attr_vals === '' ? [] : item.attr_vals.split(' ')
         })
 
         this.manyTableList = res.data
+      } else if (this.activeIndex === '2') {
+        const { data: res } = await this.$http.get(
+          `categories/${this.cateid}/attributes`,
+          {
+            params: {
+              sel: 'only'
+            }
+          }
+        )
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取静态参数列表失败!')
+        }
+        console.log(res.data)
+        this.onlyTableList = res.data
       }
     }
   },
