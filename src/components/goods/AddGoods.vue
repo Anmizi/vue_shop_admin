@@ -73,11 +73,25 @@
               :key="item.attr_id"
             >
               <el-checkbox-group v-model="checkList">
-                <el-checkbox :label="name" v-for="(name,i) in item.attr_vals" :key="i" border size="small"></el-checkbox>
+                <el-checkbox
+                  :label="name"
+                  v-for="(name, i) in item.attr_vals"
+                  :key="i"
+                  border
+                  size="small"
+                ></el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品属性">角色管理</el-tab-pane>
+          <el-tab-pane label="商品属性">
+            <el-form-item
+              :label="item.attr_name"
+              v-for="item in onlyTableList"
+              :key="item.attr_id"
+            >
+              <el-input v-model="item.attr_vals"></el-input>
+            </el-form-item>
+          </el-tab-pane>
           <el-tab-pane label="商品图片">定时任务补偿</el-tab-pane>
           <el-tab-pane label="商品内容">定时任务补偿</el-tab-pane>
         </el-tabs>
@@ -176,8 +190,9 @@ export default {
           return this.$message.error('获取动态参数列表失败!')
         }
         // console.log(res.data)
-        res.data.forEach(item => {
-          item.attr_vals = item.attr_vals === '' ? [] : item.attr_vals.split(' ')
+        res.data.forEach((item) => {
+          item.attr_vals =
+            item.attr_vals === '' ? [] : item.attr_vals.split(' ')
         })
 
         this.manyTableList = res.data
@@ -216,10 +231,10 @@ export default {
 /deep/ .el-step__title {
   font-size: 14px;
 }
-/deep/ .el-checkbox{
+/deep/ .el-checkbox {
   margin: 0;
 }
-.el-card{
+.el-card {
   margin-bottom: 60px;
 }
 </style>
