@@ -66,7 +66,17 @@
               ></el-cascader>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品参数">配置管理</el-tab-pane>
+          <el-tab-pane label="商品参数">
+            <el-form-item
+              :label="item.attr_name"
+              v-for="item in manyTableList"
+              :key="item.attr_id"
+            >
+              <el-checkbox-group v-model="checkList">
+                <el-checkbox :label="name" v-for="(name,i) in item.attr_vals" :key="i" border size="small"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-tab-pane>
           <el-tab-pane label="商品属性">角色管理</el-tab-pane>
           <el-tab-pane label="商品图片">定时任务补偿</el-tab-pane>
           <el-tab-pane label="商品内容">定时任务补偿</el-tab-pane>
@@ -118,7 +128,9 @@ export default {
         children: 'children'
       },
       // 动态参数列表数据
-      manyTableList: []
+      manyTableList: [],
+      // 复选框组默认值
+      checkList: []
     }
   },
   created () {
@@ -150,14 +162,22 @@ export default {
     async tabClick () {
       // 当点击的是商品参数标签时
       if (this.activeIndex === '1') {
-        const { data: res } = await this.$http.get(`categories/${this.cateid}/attributes`, {
-          params: {
-            sel: 'many'
+        const { data: res } = await this.$http.get(
+          `categories/${this.cateid}/attributes`,
+          {
+            params: {
+              sel: 'many'
+            }
           }
-        })
+        )
         if (res.meta.status !== 200) {
           return this.$message.error('获取动态参数列表失败!')
         }
+        console.log(res.data)
+        res.data.forEach(item => {
+          item.attr_vals = item.attr_vals === '' ? [] : item.attr_vals.split(' ')
+        })
+
         this.manyTableList = res.data
       }
     }
@@ -179,5 +199,11 @@ export default {
 }
 /deep/ .el-step__title {
   font-size: 14px;
+}
+/deep/ .el-checkbox{
+  margin: 0;
+}
+.el-card{
+  margin-bottom: 60px;
 }
 </style>
