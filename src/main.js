@@ -10,6 +10,16 @@ import './assets/css/global.css'
 import treeTable from 'vue-table-with-tree-grid'
 
 import axios from 'axios'
+
+import VueQuillEditor from 'vue-quill-editor'
+
+// require styles 导入VueQuillEditor样式文件
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+Vue.use(VueQuillEditor)
+
 // 配置请求根路径
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 // 添加请求拦截器

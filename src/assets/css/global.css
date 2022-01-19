@@ -18,3 +18,7 @@ html,body,#app{
 .el-cascader-menu{
   height: 300px;
 }
+/* 设置富文本编辑器的最小高度 */
+.ql-editor{
+  min-height: 300px;
+}

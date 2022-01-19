@@ -104,18 +104,18 @@
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="商品内容"></el-tab-pane>
+          <el-tab-pane label="商品内容">
+            <!-- 富文本编辑器组件 -->
+            <quill-editor v-model="addForm.goods_introduce"> </quill-editor>
+            <el-button type="primary" class="addBtn">添加商品</el-button>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
 
     <!-- 图片预览框 -->
-    <el-dialog
-      title="图片预览"
-      :visible.sync="previewVisible"
-      width="50%"
-    >
-      <img :src="previewPath" alt="" class="previewImg">
+    <el-dialog title="图片预览" :visible.sync="previewVisible" width="50%">
+      <img :src="previewPath" alt="" class="previewImg" />
     </el-dialog>
   </div>
 </template>
@@ -134,7 +134,9 @@ export default {
         goods_weight: 0,
         goods_cat: [],
         // 上传图片的临时路径数组
-        pics: []
+        pics: [],
+        // 商品介绍信息
+        goods_introduce: ''
       },
       // 添加商品表单验证规则
       addFormRules: {
@@ -290,7 +292,10 @@ export default {
 .el-card {
   margin-bottom: 60px;
 }
-.el-dialog .previewImg{
+.el-dialog .previewImg {
   width: 100%;
+}
+.addBtn{
+  margin: 20px 0;
 }
 </style>
