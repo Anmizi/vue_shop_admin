@@ -92,8 +92,19 @@
               <el-input v-model="item.attr_vals"></el-input>
             </el-form-item>
           </el-tab-pane>
-          <el-tab-pane label="商品图片">定时任务补偿</el-tab-pane>
-          <el-tab-pane label="商品内容">定时任务补偿</el-tab-pane>
+          <el-tab-pane label="商品图片">
+            <el-upload
+              :action="uploadURL"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-success="handleSuccess"
+              list-type="picture"
+              :headers="headersObj"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+          </el-tab-pane>
+          <el-tab-pane label="商品内容"></el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
@@ -112,7 +123,9 @@ export default {
         goods_price: 0,
         goods_number: 0,
         goods_weight: 0,
-        goods_cat: []
+        goods_cat: [],
+        // 上传图片的临时路径数组
+        pics: []
       },
       // 添加商品表单验证规则
       addFormRules: {
@@ -146,7 +159,13 @@ export default {
       // 静态属性列表数据
       onlyTableList: [],
       // 复选框组默认值
-      checkList: []
+      checkList: [],
+      // 上传图片的URL地址
+      uploadURL: 'http://127.0.0.1:8888/api/private/v1/upload',
+      // 图片上传组件的请求头对象
+      headersObj: {
+        Authorization: window.sessionStorage.getItem('token')
+      }
     }
   },
   created () {
@@ -211,7 +230,23 @@ export default {
         console.log(res.data)
         this.onlyTableList = res.data
       }
+    },
+    // 点击已经上传图片的钩子
+    handlePreview () {
+
+    },
+    // 文件列表移除文件时的钩子
+    handleRemove () {
+
+    },
+    // 图片上传成功时的钩子
+    handleSuccess (response) {
+      console.log(response)
+      const picInfo = { pic: response.data.tmp_path }
+      this.addForm.pics.push(picInfo)
+      console.log(this.addForm)
     }
+
   },
   computed: {
     cateid () {
