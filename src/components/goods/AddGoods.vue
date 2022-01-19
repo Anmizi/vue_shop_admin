@@ -236,8 +236,11 @@ export default {
 
     },
     // 文件列表移除文件时的钩子
-    handleRemove () {
-
+    handleRemove (file) {
+      const picInfo = file.response.data.tmp_path
+      const i = this.addForm.pics.findIndex(x => x.pic === picInfo)
+      this.addForm.pics.splice(i, 1)
+      console.log(this.addForm)
     },
     // 图片上传成功时的钩子
     handleSuccess (response) {
