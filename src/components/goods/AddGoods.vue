@@ -108,6 +108,15 @@
         </el-tabs>
       </el-form>
     </el-card>
+
+    <!-- 图片预览框 -->
+    <el-dialog
+      title="图片预览"
+      :visible.sync="previewVisible"
+      width="50%"
+    >
+      <img :src="previewPath" alt="" class="previewImg">
+    </el-dialog>
   </div>
 </template>
 
@@ -165,7 +174,11 @@ export default {
       // 图片上传组件的请求头对象
       headersObj: {
         Authorization: window.sessionStorage.getItem('token')
-      }
+      },
+      // 图片预览路径
+      previewPath: '',
+      // 图片预览框可见性
+      previewVisible: false
     }
   },
   created () {
@@ -232,13 +245,16 @@ export default {
       }
     },
     // 点击已经上传图片的钩子
-    handlePreview () {
-
+    handlePreview (file) {
+      this.previewPath = file.response.data.url
+      console.log(this.previewPath)
+      // 点击预览，显示预览框
+      this.previewVisible = true
     },
     // 文件列表移除文件时的钩子
     handleRemove (file) {
       const picInfo = file.response.data.tmp_path
-      const i = this.addForm.pics.findIndex(x => x.pic === picInfo)
+      const i = this.addForm.pics.findIndex((x) => x.pic === picInfo)
       this.addForm.pics.splice(i, 1)
       console.log(this.addForm)
     },
@@ -249,7 +265,6 @@ export default {
       this.addForm.pics.push(picInfo)
       console.log(this.addForm)
     }
-
   },
   computed: {
     cateid () {
@@ -274,5 +289,8 @@ export default {
 }
 .el-card {
   margin-bottom: 60px;
+}
+.el-dialog .previewImg{
+  width: 100%;
 }
 </style>
