@@ -72,7 +72,7 @@
               v-for="item in manyTableList"
               :key="item.attr_id"
             >
-              <el-checkbox-group v-model="checkList">
+              <el-checkbox-group v-model="item.attr_vals">
                 <el-checkbox
                   :label="name"
                   v-for="(name, i) in item.attr_vals"
@@ -137,7 +137,9 @@ export default {
         // 上传图片的临时路径数组
         pics: [],
         // 商品介绍信息
-        goods_introduce: ''
+        goods_introduce: '',
+        // 商品参数数组
+        attrs: []
       },
       // 添加商品表单验证规则
       addFormRules: {
@@ -170,7 +172,7 @@ export default {
       manyTableList: [],
       // 静态属性列表数据
       onlyTableList: [],
-      // 复选框组默认值
+      // 商品参数值数组
       checkList: [],
       // 上传图片的URL地址
       uploadURL: 'http://127.0.0.1:8888/api/private/v1/upload',
@@ -279,6 +281,22 @@ export default {
       // 发起请求提交表单
       const addForm = _.cloneDeep(this.addForm)
       addForm.goods_cat = this.addForm.goods_cat.join(',')
+      // 处理动态参数
+      this.manyTableList.forEach(item => {
+        const newInfo = {
+          attr_id: item.attr_id,
+          attr_values: item.attr_vals.join(' ')
+        }
+        addForm.attrs.push(newInfo)
+      })
+      // 处理静态属性
+      this.onlyTableList.forEach(item => {
+        const newInfo = {
+          attr_id: item.attr_id,
+          attr_values: item.attr_vals
+        }
+        addForm.attrs.push(newInfo)
+      })
       console.log(addForm)
     }
   },
