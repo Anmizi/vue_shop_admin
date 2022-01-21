@@ -271,7 +271,7 @@ export default {
       console.log(this.addForm)
     },
     // 点击添加商品触发
-    add () {
+    async add () {
       // 触发表单预验证
       this.$refs.addFormRef.validate(valid => {
         if (!valid) {
@@ -297,7 +297,14 @@ export default {
         }
         addForm.attrs.push(newInfo)
       })
-      console.log(addForm)
+      // console.log(addForm)
+      // 发起请求添加商品
+      const { data: res } = await this.$http.post('goods', addForm)
+      if (res.meta.status !== 201) {
+        this.$message.error('商品添加失败!')
+      }
+      this.$message.success('商品添加成功!')
+      this.$router.push('/goods')
     }
   },
   computed: {
