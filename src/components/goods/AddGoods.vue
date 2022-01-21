@@ -121,6 +121,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   name: 'AddGoods',
   data () {
@@ -275,6 +276,10 @@ export default {
           return this.$message.error('请求填写表单必要项!')
         }
       })
+      // 发起请求提交表单
+      const addForm = _.cloneDeep(this.addForm)
+      addForm.goods_cat = this.addForm.goods_cat.join(',')
+      console.log(addForm)
     }
   },
   computed: {
