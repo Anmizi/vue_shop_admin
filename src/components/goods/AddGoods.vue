@@ -34,7 +34,7 @@
       <el-form
         :model="addForm"
         :rules="addFormRules"
-        ref="=addFormRef"
+        ref="addFormRef"
         label-width="100px"
         label-position="top"
       >
@@ -107,7 +107,7 @@
           <el-tab-pane label="商品内容">
             <!-- 富文本编辑器组件 -->
             <quill-editor v-model="addForm.goods_introduce"> </quill-editor>
-            <el-button type="primary" class="addBtn">添加商品</el-button>
+            <el-button type="primary" class="addBtn" @click="add">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -266,6 +266,15 @@ export default {
       const picInfo = { pic: response.data.tmp_path }
       this.addForm.pics.push(picInfo)
       console.log(this.addForm)
+    },
+    // 点击添加商品触发
+    add () {
+      // 触发表单预验证
+      this.$refs.addFormRef.validate(valid => {
+        if (!valid) {
+          return this.$message.error('请求填写表单必要项!')
+        }
+      })
     }
   },
   computed: {
