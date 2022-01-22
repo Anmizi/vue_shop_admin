@@ -43,6 +43,7 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
+              @click="showEditDialog"
             ></el-button>
             <el-button
               type="success"
@@ -65,10 +66,44 @@
       >
       </el-pagination>
     </el-card>
+    <!-- 编辑地址对话框 -->
+    <el-dialog
+      title="修改地址"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="closeEditDialog"
+      >
+      <!-- 编辑地址表单 -->
+      <el-form
+        ref="editForm"
+        :model="editAddressForm"
+        label-width="100px"
+        :rules="editFormRules"
+      >
+        <el-form-item label="省市区/县" prop="address">
+          <el-cascader
+            v-model="editAddressForm.address"
+            :options="cityData"
+            :props="cascaderProps"
+            @change="handleChange"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" prop="address1">
+          <el-input v-model="editAddressForm.address1"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import cityData from './citydata'
 export default {
   name: 'Order',
   data () {
@@ -82,7 +117,29 @@ export default {
         pagesize: 10
       },
       // 订单列表数据总数
-      total: 0
+      total: 0,
+      // 省市区数据
+      cityData,
+      // 编辑地址对话框可见性
+      editDialogVisible: false,
+      // 编辑地址表单默认值
+      editAddressForm: {
+        address: [],
+        address1: ''
+      },
+      // 编辑地址表单的校验规则
+      editFormRules: {
+        address: [
+          { required: true, message: '请选择省市/县地址', trigger: 'blur' }
+        ],
+        address1: [
+          { required: true, message: '请输入详细地址', trigger: 'blur' }
+        ]
+      },
+      // 级联选择器配置对象
+      cascaderProps: {
+        expandTrigger: 'hover'
+      }
     }
   },
   created () {
@@ -110,6 +167,18 @@ export default {
     handleCurrentChange (currentPage) {
       this.queryInfo.pagenum = currentPage
       this.getOrderList()
+    },
+    // 点击编辑地址按钮触发
+    showEditDialog () {
+      this.editDialogVisible = true
+    },
+    // 级联选择器切换选中节点触发
+    handleChange () {
+
+    },
+    // 关闭编辑地址对话框的回调
+    closeEditDialog () {
+      this.$refs.editForm.resetFields()
     }
   }
 }
