@@ -18,7 +18,7 @@
         </el-col>
       </el-row>
       <!-- 表格区域 -->
-      <el-table :data="orderList" stripe style="width: 100%" border>
+      <el-table :data="orderList" stripe style="width: 100%" border row-key="id">
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column prop="order_number" label="订单编号">
         </el-table-column>
