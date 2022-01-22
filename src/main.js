@@ -18,12 +18,18 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+// 导入nprogress实现进度条效果
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
 Vue.use(VueQuillEditor)
 
 // 配置请求根路径
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
+  // 启动进度条
+  NProgress.start()
   // 为发送请求添加请求验证头部Authorization
   // 保证有获取数据的权限
   config.headers.Authorization = window.sessionStorage.getItem('token')
@@ -31,6 +37,10 @@ axios.interceptors.request.use(function (config) {
 }, function (error) {
   // 对请求错误做些什么
   return Promise.reject(error)
+})
+axios.interceptors.response.use(config => {
+  NProgress.done()
+  return config
 })
 Vue.prototype.$http = axios
 
