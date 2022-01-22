@@ -47,8 +47,9 @@
             ></el-button>
             <el-button
               type="success"
-              icon="el-icon-s-tools"
+              icon="el-icon-location-outline"
               size="small"
+              @click="showProgressDialog"
             ></el-button>
           </template>
         </el-table-column>
@@ -72,7 +73,7 @@
       :visible.sync="editDialogVisible"
       width="50%"
       @close="closeEditDialog"
-      >
+    >
       <!-- 编辑地址表单 -->
       <el-form
         ref="editForm"
@@ -95,6 +96,31 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editDialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
+    <!-- 物流信息对话框 -->
+    <el-dialog
+      title="物流进度"
+      :visible.sync="progressDialogVisible"
+      width="50%"
+    >
+      <!-- 物流时间线 -->
+
+      <el-timeline reverse>
+        <el-timeline-item
+          v-for="(activity, index) in progressData"
+          :key="index"
+          :timestamp="activity.time"
+        >
+          {{ activity.context }}
+        </el-timeline-item>
+      </el-timeline>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="progressDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="progressDialogVisible = false"
           >确 定</el-button
         >
       </span>
@@ -122,6 +148,8 @@ export default {
       cityData,
       // 编辑地址对话框可见性
       editDialogVisible: false,
+      // 物流信息对话框可见性
+      progressDialogVisible: false,
       // 编辑地址表单默认值
       editAddressForm: {
         address: [],
@@ -139,7 +167,72 @@ export default {
       // 级联选择器配置对象
       cascaderProps: {
         expandTrigger: 'hover'
-      }
+      },
+      // 物流信息对象
+      progressData: [
+        {
+          time: '2018-05-10 09:39:00',
+          ftime: '2018-05-10 09:39:00',
+          context: '已签收,感谢使用顺丰,期待再次为您服务',
+          location: ''
+        },
+        {
+          time: '2018-05-10 08:23:00',
+          ftime: '2018-05-10 08:23:00',
+          context:
+              '[北京市]北京海淀育新小区营业点派件员 顺丰速运 95338正在为您派件',
+          location: ''
+        },
+        {
+          time: '2018-05-10 07:32:00',
+          ftime: '2018-05-10 07:32:00',
+          context: '快件到达 [北京海淀育新小区营业点]',
+          location: ''
+        },
+        {
+          time: '2018-05-10 02:03:00',
+          ftime: '2018-05-10 02:03:00',
+          context:
+              '快件在[北京顺义集散中心]已装车,准备发往 [北京海淀育新小区营业点]',
+          location: ''
+        },
+        {
+          time: '2018-05-09 23:05:00',
+          ftime: '2018-05-09 23:05:00',
+          context: '快件到达 [北京顺义集散中心]',
+          location: ''
+        },
+        {
+          time: '2018-05-09 21:21:00',
+          ftime: '2018-05-09 21:21:00',
+          context: '快件在[北京宝胜营业点]已装车,准备发往 [北京顺义集散中心]',
+          location: ''
+        },
+        {
+          time: '2018-05-09 13:07:00',
+          ftime: '2018-05-09 13:07:00',
+          context: '顺丰速运 已收取快件',
+          location: ''
+        },
+        {
+          time: '2018-05-09 12:25:03',
+          ftime: '2018-05-09 12:25:03',
+          context: '卖家发货',
+          location: ''
+        },
+        {
+          time: '2018-05-09 12:22:24',
+          ftime: '2018-05-09 12:22:24',
+          context: '您的订单将由HLA（北京海淀区清河中街店）门店安排发货。',
+          location: ''
+        },
+        {
+          time: '2018-05-08 21:36:04',
+          ftime: '2018-05-08 21:36:04',
+          context: '商品已经下单',
+          location: ''
+        }
+      ]
     }
   },
   created () {
@@ -173,12 +266,21 @@ export default {
       this.editDialogVisible = true
     },
     // 级联选择器切换选中节点触发
-    handleChange () {
-
-    },
+    handleChange () {},
     // 关闭编辑地址对话框的回调
     closeEditDialog () {
       this.$refs.editForm.resetFields()
+    },
+    // 点击查看物流信息表单对话框
+    async showProgressDialog () {
+      this.progressDialogVisible = true
+      // 发起请求获取物流信息
+      // const { data: res } = await this.$http.get('kuaidi/1106975712662')
+      // 接口损坏，使用假数据
+
+      // if (res.meta.status !== 200) {
+      //   return this.$message.error('获取物流进度失败！')
+      // }
     }
   }
 }
