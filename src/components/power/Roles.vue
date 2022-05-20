@@ -229,7 +229,7 @@ export default {
     // 通过ID移除指定权限
     async removeRightByID (role, rightId) {
       const confirmResult = await this.$confirm(
-        '此操作将永久删除该文件, 是否继续?',
+        '此操作将永久删除该权限, 是否继续?',
         '提示',
         {
           confirmButtonText: '确定',
@@ -238,7 +238,7 @@ export default {
         }
       ).catch((err) => err)
       if (confirmResult !== 'confirm') {
-        this.$message.info('取消了删除操作')
+        return this.$message.info('取消了删除操作')
       }
       const { data: res } = await this.$http.delete(
         `roles/${role.id}/rights/${rightId}`
@@ -315,6 +315,7 @@ export default {
     async showSetRightDialog (role) {
       this.roleId = role.id
       const { data: res } = await this.$http.get('rights/tree')
+      console.log(res.data)
       if (res.meta.status !== 200) {
         return this.$message.error('权限列表获取失败')
       }
