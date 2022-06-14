@@ -10,7 +10,7 @@ module.exports = {
         styleLibraryName: 'theme-chalk'
       }
     ],
-    'transform-remove-console',
+    // 'transform-remove-console',
     // 实现路由懒加载
     '@babel/plugin-syntax-dynamic-import'
   ]
