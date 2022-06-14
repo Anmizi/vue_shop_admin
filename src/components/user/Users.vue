@@ -397,6 +397,10 @@ export default {
         return this.$message.error('删除用户失败')
       }
       this.$message.success('删除用户成功')
+      // 如果当前页只有一条数据，那么删除后刷新数据列表时,最后显示前一页的数据，而不是当前空数据页
+      if (this.queryInfo.pagesize === 1 && this.queryInfo.pagenum !== 1) {
+        this.queryInfo.pagenum -= 1
+      }
       this.getUserList()
     },
     async setRole (role) {

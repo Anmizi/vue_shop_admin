@@ -25,7 +25,7 @@ import 'nprogress/nprogress.css'
 Vue.use(VueQuillEditor)
 
 // 配置请求根路径
-axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {
   // 启动进度条
